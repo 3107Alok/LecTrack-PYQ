@@ -71,9 +71,17 @@ async function loadPYQ(type, btnElement) {
     div.innerHTML = data.map(p => `
       <div class="card">
         <h3>${p.file_name}</h3>
-        <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
+        <p style="margin-bottom: 12px;">${p.subject_code} • ${p.type.toUpperCase()}</p>
+        
+        <iframe 
+          src="${p.file_url}" 
+          width="100%" 
+          height="400px"
+          style="border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 20px; background: #fff;">
+        </iframe>
+
         <div class="card-actions">
-          <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
+          <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Full Screen</a>
           <a href="${p.file_url}" download class="action-link download-link">⬇ Download</a>
         </div>
       </div>
