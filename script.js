@@ -91,7 +91,7 @@ async function loadPYQ(type, btnElement) {
         <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
         <div class="card-actions">
           <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
-          <a href="#" onclick="downloadFileFromUrl('${p.file_url}'); return false;" class="action-link download-link">⬇ Download</a>
+          <a href="#" onclick="downloadFileFromUrl('${p.file_url}', '${p.file_name}'); return false;" class="action-link download-link">⬇ Download</a>
         </div>
       </div>
     `).join("");
@@ -108,9 +108,8 @@ function getKeyFromUrl(url) {
 }
 
 // 🔥 DOWNLOAD FUNCTION
-async function downloadFileFromUrl(file_url) {
+async function downloadFileFromUrl(file_url, file_name) {
   const file_key = getKeyFromUrl(file_url);
-  console.log("FILE KEY:", file_key);
 
   if (!file_key) {
     showToast("File key missing!");
@@ -118,17 +117,21 @@ async function downloadFileFromUrl(file_url) {
   }
 
   try {
-    showToast("Generating download link...");
-    const res = await fetch(API + `/get-download-url?file_key=${file_key}`);
+    showToast("Preparing download...");
+
+    const res = await fetch(
+      API + `/get-download-url?file_key=${file_key}&filename=${encodeURIComponent(file_name)}`
+    );
+
     const data = await res.json();
 
     if (data.download_url) {
-      window.location.href = data.download_url; // 🔥 force download
+      window.location.href = data.download_url;
     } else {
-      showToast("Download link not found");
+      showToast("Download failed");
     }
 
   } catch (e) {
-    showToast("Download failed");
+    showToast("Error downloading file");
   }
 }
