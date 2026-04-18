@@ -1,0 +1,87 @@
+// 🔥 YOUR API
+const API = "https://w8dac3s836.execute-api.ap-south-1.amazonaws.com";
+
+// 🔥 LOAD SUBJECTS (AUTO)
+window.onload = loadSubjects;
+
+async function loadSubjects() {
+  const select = document.getElementById("subject");
+  try {
+    const res = await fetch(API + "/syllabus?year=2");
+    const data = await res.json();
+
+    select.innerHTML = `<option value="">Select Subject</option>`;
+
+    const unique = {};
+    data.forEach(i => {
+      unique[i.subject_code] = i.subject_name;
+    });
+
+    Object.keys(unique).forEach(code => {
+      select.innerHTML += `
+        <option value="${code}">
+          ${code} - ${unique[code]}
+        </option>
+      `;
+    });
+
+  } catch (e) {
+    select.innerHTML = `<option value="">Error loading subjects</option>`;
+  }
+}
+
+// 🔥 LOAD PYQ
+async function loadPYQ(type, btnElement) {
+  const subject = document.getElementById("subject").value;
+
+  if (!subject) {
+    alert("Please select a subject first!");
+    return;
+  }
+  
+  // Handle active button styling
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active-btn'));
+  if (btnElement) {
+    btnElement.classList.add('active-btn');
+  }
+
+  const div = document.getElementById("pyqList");
+  const loader = document.getElementById("loader");
+  const loaderText = document.getElementById("loaderText");
+  
+  div.innerHTML = "";
+  div.style.display = "none";
+  loader.style.display = "flex";
+  loaderText.innerText = `Fetching ${type.toUpperCase()} Details...`;
+
+  try {
+    const res = await fetch(
+      API + `/pyq?subject_code=${subject}&type=${type}`
+    );
+
+    const data = await res.json();
+    loader.style.display = "none";
+    div.style.display = "grid";
+
+    if (!data.length) {
+      div.innerHTML = `<div class="empty-state">No PYQs found for ${type.toUpperCase()}</div>`;
+      return;
+    }
+
+    div.innerHTML = data.map(p => `
+      <div class="card">
+        <h3>${p.file_name}</h3>
+        <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
+        <div class="card-actions">
+          <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
+          <a href="${p.file_url}" download class="action-link download-link">⬇ Download</a>
+        </div>
+      </div>
+    `).join("");
+
+  } catch (e) {
+    loader.style.display = "none";
+    div.style.display = "grid";
+    div.innerHTML = `<div class="empty-state">Error loading PYQs. Please try again later.</div>`;
+  }
+}
