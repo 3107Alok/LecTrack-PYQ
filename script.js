@@ -52,7 +52,7 @@ async function loadPYQ(type, btnElement) {
   div.innerHTML = "";
   div.style.display = "none";
   loader.style.display = "flex";
-  loaderText.innerText = `Fetching ${type.toUpperCase()} Details...`;
+  loaderText.innerText = `Fetching ${type.toUpperCase()} PYQs...`;
 
   try {
     const res = await fetch(
@@ -71,17 +71,10 @@ async function loadPYQ(type, btnElement) {
     div.innerHTML = data.map(p => `
       <div class="card">
         <h3>${p.file_name}</h3>
-        <p style="margin-bottom: 12px;">${p.subject_code} • ${p.type.toUpperCase()}</p>
-        
-        <iframe 
-          src="${p.file_url}" 
-          width="100%" 
-          height="400px"
-          style="border-radius: 8px; border: 1px solid var(--card-border); margin-bottom: 20px; background: #fff;">
-        </iframe>
+        <p style="margin-bottom: 24px;">${p.subject_code} • ${p.type.toUpperCase()}</p>
 
         <div class="card-actions">
-          <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Full Screen</a>
+          <a href="https://docs.google.com/viewer?url=${encodeURIComponent(p.file_url)}" target="_blank" class="action-link preview-link">👁 Preview</a>
           <a href="${p.file_url}" download class="action-link download-link">⬇ Download</a>
         </div>
       </div>
