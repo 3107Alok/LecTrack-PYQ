@@ -90,7 +90,8 @@ async function loadPYQ(type, btnElement) {
         <h3>${p.file_name}</h3>
         <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
         <div class="card-actions">
-          <a href="${p.file_url}" target="_blank" class="action-link preview-link">Preview / Download</a>
+          <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
+          <a href="${p.file_url}" download class="action-link download-link">⬇ Download</a>
         </div>
       </div>
     `).join("");
