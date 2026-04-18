@@ -90,7 +90,8 @@ async function loadPYQ(type, btnElement) {
         <h3>${p.file_name}</h3>
         <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
         <div class="card-actions">
-          <a href="${p.file_url}" target="_blank" class="action-link preview-link">Preview / Download</a>
+          <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
+          <a href="#" onclick="downloadFile('${p.file_key}'); return false;" class="action-link download-link">⬇ Download</a>
         </div>
       </div>
     `).join("");
@@ -99,5 +100,19 @@ async function loadPYQ(type, btnElement) {
     loader.style.display = "none";
     div.style.display = "grid";
     div.innerHTML = `<div class="empty-state">Error loading PYQs. Please try again later.</div>`;
+  }
+}
+
+// 🔥 DOWNLOAD FUNCTION
+async function downloadFile(file_key) {
+  try {
+    showToast("Generating download link...");
+    const res = await fetch(API + `/get-download-url?file_key=${file_key}`);
+    const data = await res.json();
+
+    window.location.href = data.download_url; // 🔥 force download
+
+  } catch (e) {
+    showToast("Download failed");
   }
 }
