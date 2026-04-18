@@ -35,7 +35,7 @@ async function loadPYQ(type, btnElement) {
   const subject = document.getElementById("subject").value;
 
   if (!subject) {
-    alert("Please select a subject first!");
+    showToast("Please select a subject first!", "warning");
     return;
   }
   
@@ -84,4 +84,37 @@ async function loadPYQ(type, btnElement) {
     div.style.display = "grid";
     div.innerHTML = `<div class="empty-state">Error loading PYQs. Please try again later.</div>`;
   }
+}
+
+// 🔥 TOAST NOTIFICATION LOGIC
+function showToast(message, type = "warning") {
+  let toast = document.getElementById("toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  
+  // Custom Icon and colors
+  let icon = type === "warning" ? "⚠️" : type === "error" ? "❌" : "✅";
+  let borderColor = type === "warning" ? "#fbbf24" : type === "error" ? "#f87171" : "#28a8ba";
+  
+  toast.style.borderLeft = `4px solid ${borderColor}`;
+  
+  toast.innerHTML = `
+    <span class="toast-icon">${icon}</span>
+    <span style="font-weight: 500; font-size: 14px;">${message}</span>
+  `;
+  
+  // Force reflow
+  void toast.offsetWidth;
+  
+  toast.classList.add("show");
+  
+  if (window.toastTimeout) clearTimeout(window.toastTimeout);
+  
+  window.toastTimeout = setTimeout(() => {
+    toast.classList.remove("show");
+  }, 3000);
 }
