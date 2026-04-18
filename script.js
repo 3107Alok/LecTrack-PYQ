@@ -91,7 +91,7 @@ async function loadPYQ(type, btnElement) {
         <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
         <div class="card-actions">
           <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
-          <a href="#" onclick="downloadFile(getKeyFromUrl('${p.file_url}')); return false;" class="action-link download-link">⬇ Download</a>
+          <a href="#" onclick="downloadFileFromUrl('${p.file_url}'); return false;" class="action-link download-link">⬇ Download</a>
         </div>
       </div>
     `).join("");
@@ -108,7 +108,8 @@ function getKeyFromUrl(url) {
 }
 
 // 🔥 DOWNLOAD FUNCTION
-async function downloadFile(file_key) {
+async function downloadFileFromUrl(file_url) {
+  const file_key = getKeyFromUrl(file_url);
   console.log("FILE KEY:", file_key);
 
   if (!file_key) {
