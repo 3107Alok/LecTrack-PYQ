@@ -4,6 +4,23 @@ const API = "https://w8dac3s836.execute-api.ap-south-1.amazonaws.com";
 // 🔥 LOAD SUBJECTS (AUTO)
 window.onload = loadSubjects;
 
+// 🔥 TOAST UTILITY
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  const toastMessage = document.getElementById("toast-message");
+  
+  if (toast && toastMessage) {
+    toastMessage.textContent = message;
+    toast.classList.add("show");
+    
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
+  } else {
+    alert(message); // Fallback if UI is missing
+  }
+}
+
 async function loadSubjects() {
   const select = document.getElementById("subject");
   try {
@@ -35,7 +52,7 @@ async function loadPYQ(type, btnElement) {
   const subject = document.getElementById("subject").value;
 
   if (!subject) {
-    showToast("Please select a subject first!", "warning");
+    showToast("Please select a subject first!");
     return;
   }
   
@@ -52,7 +69,7 @@ async function loadPYQ(type, btnElement) {
   div.innerHTML = "";
   div.style.display = "none";
   loader.style.display = "flex";
-  loaderText.innerText = `Fetching ${type.toUpperCase()} PYQs...`;
+  loaderText.innerText = `Fetching ${type.toUpperCase()} Details...`;
 
   try {
     const res = await fetch(
@@ -64,17 +81,16 @@ async function loadPYQ(type, btnElement) {
     div.style.display = "grid";
 
     if (!data.length) {
-      div.innerHTML = `<div class="empty-state">No PYQs found for ${type.toUpperCase()}</div>`;
+      div.innerHTML = `<div class="empty-state">Will Upload Soon.....</div>`;
       return;
     }
 
-    div.innerHTML = data.map(p => `
-      <div class="card">
+    div.innerHTML = data.map((p, index) => `
+      <div class="card" style="animation-delay: ${index * 0.08}s">
         <h3>${p.file_name}</h3>
-        <p style="margin-bottom: 24px;">${p.subject_code} • ${p.type.toUpperCase()}</p>
-
+        <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
         <div class="card-actions">
-          <a href="https://docs.google.com/viewer?url=${encodeURIComponent(p.file_url)}" target="_blank" class="action-link preview-link">👁 Preview</a>
+          <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
           <a href="${p.file_url}" download class="action-link download-link">⬇ Download</a>
         </div>
       </div>
@@ -85,37 +101,4 @@ async function loadPYQ(type, btnElement) {
     div.style.display = "grid";
     div.innerHTML = `<div class="empty-state">Error loading PYQs. Please try again later.</div>`;
   }
-}
-
-// 🔥 TOAST NOTIFICATION LOGIC
-function showToast(message, type = "warning") {
-  let toast = document.getElementById("toast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "toast";
-    toast.className = "toast";
-    document.body.appendChild(toast);
-  }
-  
-  // Custom Icon and colors
-  let icon = type === "warning" ? "⚠️" : type === "error" ? "❌" : "✅";
-  let borderColor = type === "warning" ? "#fbbf24" : type === "error" ? "#f87171" : "#28a8ba";
-  
-  toast.style.borderLeft = `4px solid ${borderColor}`;
-  
-  toast.innerHTML = `
-    <span class="toast-icon">${icon}</span>
-    <span style="font-weight: 500; font-size: 14px;">${message}</span>
-  `;
-  
-  // Force reflow
-  void toast.offsetWidth;
-  
-  toast.classList.add("show");
-  
-  if (window.toastTimeout) clearTimeout(window.toastTimeout);
-  
-  window.toastTimeout = setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
 }
