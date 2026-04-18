@@ -91,7 +91,7 @@ async function loadPYQ(type, btnElement) {
         <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
         <div class="card-actions">
           <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
-          <a href="#" onclick="downloadFile('${p.file_key}'); return false;" class="action-link download-link">⬇ Download</a>
+          <a href="#" onclick="downloadFile(getKeyFromUrl('${p.file_url}')); return false;" class="action-link download-link">⬇ Download</a>
         </div>
       </div>
     `).join("");
@@ -103,14 +103,29 @@ async function loadPYQ(type, btnElement) {
   }
 }
 
+function getKeyFromUrl(url) {
+  return url.split(".com/")[1];
+}
+
 // 🔥 DOWNLOAD FUNCTION
 async function downloadFile(file_key) {
+  console.log("FILE KEY:", file_key);
+
+  if (!file_key) {
+    showToast("File key missing!");
+    return;
+  }
+
   try {
     showToast("Generating download link...");
     const res = await fetch(API + `/get-download-url?file_key=${file_key}`);
     const data = await res.json();
 
-    window.location.href = data.download_url; // 🔥 force download
+    if (data.download_url) {
+      window.location.href = data.download_url; // 🔥 force download
+    } else {
+      showToast("Download link not found");
+    }
 
   } catch (e) {
     showToast("Download failed");
