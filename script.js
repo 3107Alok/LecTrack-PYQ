@@ -85,6 +85,9 @@ async function loadPYQ(type, btnElement) {
       return;
     }
 
+    // Sort data alphabetically by file_name
+    data.sort((a, b) => a.file_name.localeCompare(b.file_name));
+
     div.innerHTML = data.map((p, index) => `
       <div class="card" style="animation-delay: ${index * 0.08}s">
         <h3>${p.file_name}</h3>
