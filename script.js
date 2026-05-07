@@ -85,19 +85,29 @@ async function loadPYQ(type, btnElement) {
       return;
     }
 
-    // Sort data alphabetically by file_name
-    data.sort((a, b) => a.file_name.localeCompare(b.file_name));
+    // Sort data: '2026' files first, then alphabetically
+    data.sort((a, b) => {
+      const aIsNew = a.file_name.includes("2026");
+      const bIsNew = b.file_name.includes("2026");
+      if (aIsNew && !bIsNew) return -1;
+      if (!aIsNew && bIsNew) return 1;
+      return a.file_name.localeCompare(b.file_name);
+    });
 
-    div.innerHTML = data.map((p, index) => `
+    div.innerHTML = data.map((p, index) => {
+      const isNew = p.file_name.includes("2026");
+      const newTag = isNew ? `<span class="new-tag">NEW ✨</span>` : "";
+      return `
       <div class="card" style="animation-delay: ${index * 0.08}s">
-        <h3>${p.file_name}</h3>
+        <h3>${p.file_name} ${newTag}</h3>
         <p>${p.subject_code} • ${p.type.toUpperCase()}</p>
         <div class="card-actions">
           <a href="${p.file_url}" target="_blank" class="action-link preview-link">👁 Preview</a>
           <a href="#" onclick="downloadFileFromUrl('${p.file_url}', '${p.file_name}'); return false;" class="action-link download-link">⬇ Download</a>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
   } catch (e) {
     loader.style.display = "none";
